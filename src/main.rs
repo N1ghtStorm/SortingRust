@@ -3,15 +3,18 @@ use std::time::{Instant};
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let mut vector1: Vec<i32> = (0..1000000).map(|_| rng.gen_range(0, 1000000)).collect();
+    let mut vector1: Vec<i32> = (0..100000).map(|_| rng.gen_range(0, 10000)).collect();
     let mut vector2 = vector1.clone();
 
     let now1 = Instant::now();
-    vector2.sort();
+    q_sort(&mut vector1);
     println!("{}", now1.elapsed().as_millis());
     let now2 = Instant::now();
-    q_sort(&mut vector1);
+    q_sort2(&mut vector2);
     println!("{}", now2.elapsed().as_millis());
+
+    println!("{}",is_well_sorted(&vector1));
+    println!("{}",is_well_sorted(&vector2));
 }
 
 fn q_sort(vector: &mut Vec<i32>) {
@@ -19,7 +22,7 @@ fn q_sort(vector: &mut Vec<i32>) {
 }
 
 fn q_sort2(vector: &mut Vec<i32>) {
-    iterate_q_sort(vector, 0, vector.len() - 1);
+    iterate_q_sort2(vector, 0, vector.len() - 1);
 }
 
 fn iterate_q_sort(vector: &mut Vec<i32>, first:usize, last:usize) {
@@ -68,4 +71,13 @@ fn partition2(vector: &mut Vec<i32>, first:usize, last: usize) -> usize {
     }
     vector.swap(divide_element, first_high);
     first_high
+}
+
+fn is_well_sorted(vector: &Vec<i32>) -> bool {
+    for x in 0..vector.len() - 2 {
+        if vector[x] > vector[x + 1]{
+            return false;
+        }
+    }
+    true
 }
