@@ -1,20 +1,71 @@
+use rand::Rng;
+use std::time::{Instant};
+
 fn main() {
-    let mut vector = vec![1,2,6,7,3,2,3,4,6,16,22,1,0];
-    q_sort(&mut vector);
-    println!("{:?}",vector);
+    let mut rng = rand::thread_rng();
+    let mut vector1: Vec<i32> = (0..1000000).map(|_| rng.gen_range(0, 1000000)).collect();
+    let mut vector2 = vector1.clone();
+
+    let now1 = Instant::now();
+    vector2.sort();
+    println!("{}", now1.elapsed().as_millis());
+    let now2 = Instant::now();
+    q_sort(&mut vector1);
+    println!("{}", now2.elapsed().as_millis());
 }
 
 fn q_sort(vector: &mut Vec<i32>) {
     iterate_q_sort(vector, 0, vector.len() - 1);
 }
 
-fn iterate_q_sort(vector: &mut Vec<i32>, first:usize, last: usize){
-
-    let middle = last/2;
-    iterate_q_sort(vector, 0, middle - 1 );
-    iterate_q_sort(vector, middle + 1, last);
+fn q_sort2(vector: &mut Vec<i32>) {
+    iterate_q_sort(vector, 0, vector.len() - 1);
 }
 
-fn bubble_sort(vector: &mut Vec<i32>) {
+fn iterate_q_sort(vector: &mut Vec<i32>, first:usize, last:usize) {
+    if first >= last {
+        return;
+    }
+    let mut wall = first; // слева от элемента
+    for current in first..last{
+        if vector[current] < vector[last] {
+            vector.swap(current, wall);
+            wall +=1;
+        }
+    }
+    vector.swap(wall, last);
+    //println!("{:?}",vector);
+    if wall > 0 {
+        iterate_q_sort(vector, first, wall - 1);
+    }
+    iterate_q_sort(vector, wall + 1, last);
+}
 
+fn iterate_q_sort2(vector: &mut Vec<i32>, first:usize, last:usize) {
+    if first >= last {
+        return;
+    }
+    let middle = partition2(vector, first, last);
+    //println!("{:?}",vector);
+    if middle > 0 {
+        iterate_q_sort(vector, first, middle - 1);
+    }
+
+    if middle < vector.len() {
+        iterate_q_sort(vector, middle + 1, last);
+    }
+}
+
+fn partition2(vector: &mut Vec<i32>, first:usize, last: usize) -> usize {
+    let divide_element = last;
+    let mut first_high = first;
+
+    for i in first..last  {
+        if vector[i] < vector[divide_element] {
+            vector.swap(i, first_high);
+            first_high+=1;
+        }
+    }
+    vector.swap(divide_element, first_high);
+    first_high
 }
